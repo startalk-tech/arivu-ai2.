@@ -9,26 +9,44 @@ st.set_page_config(
     layout="centered"
 )
 
-# 2. ഡിസൈൻ (CSS)
+# 2. പ്രൊഫഷണൽ ലുക്ക് നൽകാനുള്ള CSS
 st.markdown("""
     <style>
-    .main { background-color: #ffffff; }
-    footer {visibility: hidden;}
-    .stChatMessage { border-radius: 12px; margin-bottom: 10px; }
+    /* ബാക്ക്ഗ്രൗണ്ട് മാറ്റി വൃത്തിയാക്കുന്നു */
+    .stApp { background-color: #FFFFFF; }
+    
+    /* മെസ്സേജ് ബോക്സുകൾക്ക് ഭംഗി നൽകുന്നു */
+    .stChatMessage { 
+        border: 1px solid #f0f2f6;
+        border-radius: 10px;
+        padding: 15px;
+    }
+    
+    /* ഇൻപുട്ട് ബോക്സ് സ്റ്റൈൽ */
+    .stChatInput {
+        border-radius: 20px;
+    }
+
+    /* ഫൂട്ടർ സ്റ്റൈൽ */
+    .main-footer {
+        text-align: center;
+        padding: 40px 0;
+        color: #333;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. ഹെഡർ (നിങ്ങളുടെ ആ ഫയൽ പേര് വച്ച്)
+# 3. ഹെഡർ (ലോഗോ മാത്രം)
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    # നിങ്ങൾ അപ്‌ലോഡ് ചെയ്ത ആ ഫയൽ പേര് ഇവിടെ നൽകി
+    # നിങ്ങളുടെ അപ്‌ലോഡ് ചെയ്ത ലോഗോ ഫയൽ പേര് ഇവിടെ നൽകി
     logo_file = "1776486725261.png"
     if os.path.exists(logo_file):
         st.image(logo_file, use_container_width=True)
     else:
-        st.markdown("<h1 style='text-align: center;'>ARIVU AI 2.0</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; color: #1E88E5;'>ARIVU AI 2.0</h1>", unsafe_allow_html=True)
 
-st.markdown("<h5 style='text-align: center; color: #666;'>A Product of Star Talk Technologies</h5>", unsafe_allow_html=True)
 st.write("---")
 
 # 4. API Key ലോജിക്
@@ -36,7 +54,7 @@ try:
     api_key = st.secrets["GEMINI_API_KEY"]
     client = genai.Client(api_key=api_key)
 except:
-    st.error("API Key സെറ്റ് ചെയ്തിട്ടില്ല! Settings-ലെ Secrets പരിശോധിക്കുക.")
+    st.error("API Key missing! Please check Streamlit Secrets.")
 
 # 5. ചാറ്റ് ഹിസ്റ്ററി
 if "messages" not in st.session_state:
@@ -46,8 +64,8 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# 6. ചോദ്യം ചോദിക്കാനുള്ള ഭാഗം
-if prompt := st.chat_input("Ask anything..."):
+# 6. ചാറ്റ് ഇൻപുട്ട്
+if prompt := st.chat_input("How can I help you today?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
@@ -59,17 +77,19 @@ if prompt := st.chat_input("Ask anything..."):
         st.session_state.messages.append({"role": "assistant", "content": response.text})
     except Exception as e:
         if "429" in str(e):
-            st.warning("ഇന്നത്തെ ലിമിറ്റ് കഴിഞ്ഞു. അല്പം കഴിഞ്ഞ് വീണ്ടും ശ്രമിക്കൂ.")
+            st.warning("Daily limit reached. Please try again later.")
         else:
-            st.error("എന്തോ ഒരു സാങ്കേതിക തകരാർ! പിന്നീട് ശ്രമിക്കുക.")
+            st.error("Technical error occurred.")
 
-# 7. ഫൂട്ടർ (നിങ്ങളുടെ പേരും കമ്പനിയും)
-st.markdown("<br><br><hr>", unsafe_allow_html=True)
+# 7. ഫ്രൊഫഷണൽ ഫൂട്ടർ (Developed by Vyshak Kannur)
+st.markdown("<br><br><br>", unsafe_allow_html=True)
 st.markdown(
     """
-    <div style='text-align: center; padding-bottom: 30px;'>
-        <p style='margin-bottom: 0; color: #555;'>© 2026 <b>Star Talk Technologies</b></p>
-        <p style='font-weight: bold; color: #1E88E5; font-size: 1.1em;'>Developed by Vyshak Kannur</p>
+    <div class="main-footer">
+        <hr style="border: 0.5px solid #eee;">
+        <p style="letter-spacing: 1px; font-size: 14px; margin-bottom: 5px;">STAR TALK TECHNOLOGIES</p>
+        <p style="font-weight: 600; font-size: 16px; color: #1E88E5;">Developed by Vyshak Kannur</p>
+        <p style="font-size: 12px; color: #999;">© 2026 All Rights Reserved</p>
     </div>
     """,
     unsafe_allow_html=True
